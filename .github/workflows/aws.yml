@@ -1,3 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>🪔 Diwali Bank 🪔</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ffb347, #ffcc33);
+        text-align: center;
+        padding: 40px;
+        color: #222;
+      }
+      button {
+        padding: 12px 25px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: none;
+        background-color: #ff5722;
+        color: white;
+        margin: 10px;
+      }
+      h1 { color: #fff; text-shadow: 2px 2px #ff8800; }
+      #user-info { margin-top: 30px; }
+    </style>
+  </head>
+  <body>
+    <h1>🪔 Diwali Bank 🪔</h1>
+    <p>Login and Add Money with Razorpay</p>
+    <button id="google-login">Login with Google</button>
+    <div id="user-info"></div>
+    <button id="pay-btn" style="display:none;">💸 Add ₹100</button>
+
+    <script>
+      // 🔹 Step 1: Firebase Config
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        appId: "YOUR_APP_ID"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      // 🔹 Step 2: Google Login
+      document.getElementById('google-login').onclick = () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .then((result) => {
+            const user = result.user;
+            document.getElementById('user-info').innerHTML =
+              `<h3>Welcome ${user.displayName}</h3><p>${user.email}</p>`;
+            document.getElementById('pay-btn').style.display = 'inline-block';
+          })
+          .catch((error) => alert(error.message));
+      };
+
+      // 🔹 Step 3: Razorpay Payment
+      document.getElementById('pay-btn').onclick = () => {
+        const options = {
+          key: "YOUR_RAZORPAY_KEY_ID",
+          amount: 100 * 100, // ₹100
+          currency: "INR",
+          name: "Diwali Bank",
+          description: "Add Money to Wallet",
+          handler: function (response) {
+            alert("Payment Success! Payment ID: " + response.razorpay_payment_id);
+          },
+          theme: { color: "#ff5722" }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+      };
+    </script>
+  </body>
+</html>
 # This workflow will build and push a new container image to Amazon ECR,
 # and then will deploy a new task definition to Amazon ECS, when there is a push to the "main" branch.
 #
